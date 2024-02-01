@@ -1,6 +1,9 @@
-project "yaml-cpp"
+
+project "YAML_CPP"
 	kind "StaticLib"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -18,21 +21,30 @@ project "yaml-cpp"
 		"include"
 	}
 
-	filter "system:windows"
-		systemversion "latest"
-		cppdialect "C++17"
-		staticruntime "off"
-
-	filter "system:linux"
-		pic "On"
-		systemversion "latest"
-		cppdialect "C++17"
-		staticruntime "off"
+	files
+	{
+		"include/**.h",
+		"src/**.cpp"
+	}
 
 	filter "configurations:Debug"
 		runtime "Debug"
+		if _ACTION == "vs2022" then
+				buildoptions "/MTd"
+		end
 		symbols "on"
 
 	filter "configurations:Release"
 		runtime "Release"
+		if _ACTION == "vs2022" then
+				buildoptions "/MT"
+		end
 		optimize "on"
+
+	filter "configurations:Dist"
+		runtime "Release"
+		if _ACTION == "vs2022" then
+				buildoptions "/MT"
+		end
+		optimize "on"
+        symbols "off" 
